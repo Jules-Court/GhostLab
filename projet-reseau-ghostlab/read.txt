@@ -1,0 +1,115 @@
+struct labyrinthe {
+    uint16_t h;
+    uint16_t w;
+    int nombrefantome;
+    int matrice[5][5]; (labyrinthe)
+}
+
+struct Joueur{
+    char *id;
+    char *port;
+    int point;
+    int x;
+    int y;
+}
+
+struct Game{
+    int partiDansSalon;
+    int partiLance;
+    uint8_t numéroParti;
+    int nbJoueurPossible;
+    int joueurPret;
+    char ip[16];
+    char port[5];
+    struct Joueur joueur[MAX]; // tableau de joueur
+    struct Labyrinthe labyrinthe
+}
+struct Game games[MAX]; Lobby?
+uint8_t nombrePartie = 1;
+
+Début de comm :
+On regarde dans les lobby les partiDansSalon et on incrémente,
+ensuite on diffuse GAMES? nombrePartieSalon
+Pour OGAMES pareil, sauf qu'on envoie numParti et nombreDeJoueur
+
+on setup joueurdanspartie a -1;
+
+NEWPL : on recup l'id, le port
+On boucle inferieur a 50, num = -1
+SI games[i].pariDansSalon=0 ET games[i].partiLance=0 et nombreParti<=i
+on met num=i et on incrémente le nombreParti
+SI games[i].pariDansSalon=0 ET games[i].partiLance=0
+on met num = k;
+on setup ensuite un joueur avec l'id entrée et le port,
+un labyrinthe 5 5 avec 2 fantome
+on mets les fantomes a une position random
+on setup la game(1,1,num,2,1,0) + newgame.ip
+on incrémente le port avec le nombre de la partie
+on met le joueur dans la partie, le labyrinthe aussi.
+
+
+REGIS : on recup l'id et le port et le numéro de partie
+on verifie si l'id du joueur est deja dans la partie
+on créé un nouveau joueur avec id et port recuperer,
+on augmente le nombre de joueur
+on envoie REGOK 
+
+UNREG : on compare au nombre de joueur 
+on retire l'id et le port du joueur de la game en réallouant un espace
+
+SIZE? : on recup le num de la partie,
+et on envoie le num partie avec les coordonnées h et w,
+
+LIST? : on recup num de la partie 
+et on envoie num de la partie et le nbr de joueur 
+ensuite on passe a PLAYR
+PLAYR : on boucle sur le nombre de joueur,
+on met a une var iden l'id du joueur (de la boucle)
+et on envoie
+
+GAME? : on met un compteur qu'on incrément si une partie est dans le pariDansSalon
+on passe ensuite a OGAME: 
+OGAME : on boucle sur le nomnbre de partie,
+Si la partie[i] est dans le salon :
+on envoie son numéro (i) et le nb de joueur
+
+START : 
+on boucle sur le nbdejoueur de la partie
+si on a le bon id , on increment joueurPret,
+et tant que le nbDeJoueur pret != nbdejoueurpossible on sleep(1);
+Une fois que c'est bon :
+on envoie les infos WELCO, mets partiLance a 1 et partiSalon a 0
+et on lance entre_dans_la_partie(sockcomm, id, joueurdanspartie)
+
+
+Entre_dans_partie :
+
+On boucle sur le nbDeJoueur, et on les place avec setRandomPosition
+on envoie ensuite les infos a POSIT
+
+on while pour la reception du client
+
+Si partiLance==0 on envoie GOBYE
+Si nbFantom=0 ou nbJoueur=0: ENDGA de l'id avec le plus de pts
+puos GOBYE?
+
+UPMOV,DOMOV,LEMOV,RIMOV : On cherche le joueur qu'on veut,
+on boucle sur le nbDeJoueur pour trouver le bon,
+on lui fais aller en haut, bas, droite, gauche
+on verifie si on tombe sur un fantome 
+on passe capture a 1, on incrémente les points, décremente un fantome
+et on envoie le SCORE
+si capture == 0 on dit juste que le joueur a bouger
+sinon on envoie MOVEF
+ENSUITE, on bouge un fantome et on multidiffuse sa position
+
+
+IQUIT : on enleve le joueur en liberant sa place et on envoie GOBYE
+
+GLIS? : on envoie le nbDeJoueur,
+et on boucle GPLYR sur le nbdejoueur et on envoie les infos de GPLYR
+
+MALL? : on recup le message et on multidiffuse
+
+SEND? : on recup l'id qu'on veut, on le cherche, recup son port,
+et on envoie sur son portUDP le msg recuperer.
